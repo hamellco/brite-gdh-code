@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      3.0
+// @version      3.5
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -566,16 +566,7 @@
 
     const agents = [...agentMap.values()]
       .filter(a => !a.LoggedOff && a.CurrentState !== 0 && !HIDDEN_AGENTS.has(a.AgentName))
-      .sort((a, b) => {
-        const aAvail = a.CurrentState === 1;
-        const bAvail = b.CurrentState === 1;
-        // Available agents first, sorted longest duration descending
-        if (aAvail && bAvail) return b.Duration - a.Duration;
-        if (aAvail) return -1;
-        if (bAvail) return 1;
-        // Everyone else alphabetically
-        return a.AgentName.localeCompare(b.AgentName);
-      });
+      .sort((a, b) => a.AgentName.localeCompare(b.AgentName));
 
     if (agents.length === 0) {
       container.innerHTML = `
