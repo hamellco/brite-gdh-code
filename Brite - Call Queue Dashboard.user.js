@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      5.5
+// @version      5.6
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -188,6 +188,7 @@
   };
 
   const agentMap = new Map();
+  let scrollRAF = null;
 
   // Level 2 agents — hidden from the dashboard permanently
   const HIDDEN_AGENTS = new Set([
@@ -721,7 +722,6 @@
      AUTO-SCROLL TEAM LIST
   =============================== */
 
-  let scrollRAF = null;
   const SCROLL_SPEED = 0.08; // px per frame — adjust for faster/slower
 
   function startAutoScroll() {
@@ -732,8 +732,6 @@
 
     const el = document.querySelector("#rc-overlay-root .rcTeamBody");
     if (!el) return;
-
-    console.log("[RC-SCROLL] scrollHeight:", el.scrollHeight, "clientHeight:", el.clientHeight, "overflow:", el.scrollHeight - el.clientHeight);
 
     function step() {
       if (el.scrollHeight - el.clientHeight > 1) {
