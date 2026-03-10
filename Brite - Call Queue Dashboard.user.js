@@ -733,8 +733,9 @@
     const el = document.querySelector("#rc-overlay-root .rcTeamBody");
     if (!el) return;
 
+    console.log("[RC-SCROLL] scrollHeight:", el.scrollHeight, "clientHeight:", el.clientHeight, "overflow:", el.scrollHeight - el.clientHeight);
+
     function step() {
-      // Only scroll if content overflows at all
       if (el.scrollHeight - el.clientHeight > 1) {
         el.scrollTop += SCROLL_SPEED;
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
