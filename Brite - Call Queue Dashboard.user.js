@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      5.7
+// @version      5.8
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -386,7 +386,12 @@
       height:100%; display:flex; flex-direction:column; min-height:0;
     }
     #rc-overlay-root .rcTeamBody{
-      padding:14px; flex:1 1 auto; min-height:0; overflow:auto;
+      padding:14px; flex:1 1 auto; min-height:0; overflow:hidden;
+    }
+
+    @keyframes rc-team-scroll {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(calc(-100% + 0px)); }
     }
     #rc-overlay-root .rcTeamBody::-webkit-scrollbar{ display:none; }
     #rc-overlay-root .rcTeamBody{ -ms-overflow-style:none; scrollbar-width:none; }
@@ -582,6 +587,7 @@
     }).join("");
 
     renderStateTiles(agents);
+    setTimeout(updateScrollAnimation, 100);
   }
 
   /* ===============================
@@ -717,17 +723,23 @@
 
   /* ===============================
      AUTO-SCROLL TEAM LIST
-     Runs every 50ms, scrolls 1px if overflow exists, loops back to top
+     CSS animation on the row container — only applied when content overflows
   =============================== */
 
-  setInterval(() => {
-    const el = document.querySelector("#rc-overlay-root .rcTeamBody");
-    if (!el) return;
-    if (el.scrollHeight <= el.clientHeight) return;
-    el.scrollTop += 1;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
-      el.scrollTop = 0;
+  function updateScrollAnimation() {
+    const body = document.querySelector("#rc-overlay-root .rcTeamBody");
+    const rows = document.getElementById("rc-team-rows");
+    if (!body || !rows) return;
+
+    const overflow = rows.scrollHeight - body.clientHeight;
+    if (overflow <= 0) {
+      rows.style.animation = "none";
+      return;
     }
-  }, 50);
+
+    // Duration: 8px/sec feels natural on a TV — adjust multiplier for speed
+    const duration = Math.round(overflow / 8);
+    rows.style.animation = `rc-team-scroll ${duration}s linear infinite`;
+  }
 
 })();
