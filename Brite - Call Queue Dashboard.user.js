@@ -1,7 +1,8 @@
 // ==UserScript==
-// @name         RingCentral NICE Overlay (Brite TV Dashboard + SN Pro + BELIEVE)
-// @namespace    http://tampermonkey.net/
-// @version      2.2
+// @name         Brite - Call Queue Dashboard
+// @author       Griffin D. Hamell
+// @namespace    http://brite.com/
+// @version      2.6
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
