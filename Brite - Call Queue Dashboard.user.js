@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      5.3
+// @version      5.4
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -397,17 +397,17 @@
     }
     #rc-overlay-root .rcRowMain{
       background:rgba(67,76,94,.95); border-radius:20px;
-      padding:24px 22px; display:flex; align-items:center; gap:20px; min-width:0;
+      padding:20px 22px; display:flex; align-items:center; gap:18px; min-width:0;
     }
     #rc-overlay-root .rcStateIcon{
-      width:28px; height:28px; flex:0 0 auto; display:block;
+      width:22px; height:22px; flex:0 0 auto; display:block;
     }
     #rc-overlay-root .rcName{
-      font-size:38px; font-weight:900;
+      font-size:32px; font-weight:900;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
     }
     #rc-overlay-root .rcState{
-      margin-left:auto; font-size:22px; font-weight:800; color:#a7b0c0;
+      margin-left:auto; font-size:18px; font-weight:800; color:#a7b0c0;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%;
     }
     #rc-overlay-root .rcRowTime{
