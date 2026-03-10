@@ -733,9 +733,8 @@
     if (!el) return;
 
     function step() {
-      // Only scroll if content overflows by at least 100px — avoids
-      // the glitch where tiny overflow causes a jump-reset loop
-      if (el.scrollHeight - el.clientHeight > 100) {
+      // Only scroll if content overflows by at least 20px
+      if (el.scrollHeight - el.clientHeight > 20) {
         el.scrollTop += SCROLL_SPEED;
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
           el.scrollTop = 0;
