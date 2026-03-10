@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      5.6
+// @version      5.7
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -188,7 +188,6 @@
   };
 
   const agentMap = new Map();
-  let scrollRAF = null;
 
   // Level 2 agents — hidden from the dashboard permanently
   const HIDDEN_AGENTS = new Set([
@@ -583,8 +582,6 @@
     }).join("");
 
     renderStateTiles(agents);
-    // Only start scroll once on first render
-    if (!scrollRAF) startAutoScroll();
   }
 
   /* ===============================
@@ -720,30 +717,17 @@
 
   /* ===============================
      AUTO-SCROLL TEAM LIST
+     Runs every 50ms, scrolls 1px if overflow exists, loops back to top
   =============================== */
 
-  const SCROLL_SPEED = 0.08; // px per frame — adjust for faster/slower
-
-  function startAutoScroll() {
-    if (scrollRAF) {
-      cancelAnimationFrame(scrollRAF);
-      scrollRAF = null;
-    }
-
+  setInterval(() => {
     const el = document.querySelector("#rc-overlay-root .rcTeamBody");
     if (!el) return;
-
-    function step() {
-      if (el.scrollHeight - el.clientHeight > 1) {
-        el.scrollTop += SCROLL_SPEED;
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
-          el.scrollTop = 0;
-        }
-      }
-      scrollRAF = requestAnimationFrame(step);
+    if (el.scrollHeight <= el.clientHeight) return;
+    el.scrollTop += 1;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
+      el.scrollTop = 0;
     }
-
-    scrollRAF = requestAnimationFrame(step);
-  }
+  }, 50);
 
 })();
