@@ -397,17 +397,17 @@
     }
     #rc-overlay-root .rcRowMain{
       background:rgba(67,76,94,.95); border-radius:20px;
-      padding:18px; display:flex; align-items:center; gap:16px; min-width:0;
+      padding:24px 22px; display:flex; align-items:center; gap:20px; min-width:0;
     }
     #rc-overlay-root .rcStateIcon{
-      width:20px; height:20px; flex:0 0 auto; display:block;
+      width:28px; height:28px; flex:0 0 auto; display:block;
     }
     #rc-overlay-root .rcName{
-      font-size:28px; font-weight:900;
+      font-size:38px; font-weight:900;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
     }
     #rc-overlay-root .rcState{
-      margin-left:auto; font-size:16px; font-weight:800; color:#a7b0c0;
+      margin-left:auto; font-size:22px; font-weight:800; color:#a7b0c0;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%;
     }
     #rc-overlay-root .rcRowTime{
