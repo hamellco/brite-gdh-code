@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Brite - Call Queue Dashboard
 // @namespace    http://brite.com
-// @version      2.3
+// @version      2.4
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
