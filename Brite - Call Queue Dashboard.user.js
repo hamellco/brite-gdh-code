@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      5.9
+// @version      6.0
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -391,6 +391,7 @@
 
     @keyframes rc-team-scroll {
       0%   { transform: translateY(0); }
+      80%  { transform: translateY(var(--rc-scroll-dist)); }
       100% { transform: translateY(var(--rc-scroll-dist)); }
     }
     #rc-overlay-root .rcTeamBody::-webkit-scrollbar{ display:none; }
@@ -741,8 +742,8 @@
     // Set exact pixel distance to scroll — no blank space overshoot
     rows.style.setProperty("--rc-scroll-dist", `-${overflow}px`);
 
-    // Duration: 6px/sec — slightly faster than before
-    const duration = Math.round(overflow / 6);
+    // Duration: slow crawl, ~2px/sec
+    const duration = Math.round(overflow / 2);
     rows.style.animation = `rc-team-scroll ${duration}s linear infinite`;
   }
 
