@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      5.0
+// @version      5.1
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -721,7 +721,7 @@
   =============================== */
 
   let scrollRAF = null;
-  const SCROLL_SPEED = 0.5; // px per frame — adjust for faster/slower
+  const SCROLL_SPEED = 0.15; // px per frame — adjust for faster/slower
 
   function startAutoScroll() {
     if (scrollRAF) {
