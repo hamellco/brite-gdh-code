@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      6.8
+// @version      6.9
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -623,12 +623,35 @@
      PROCESS AGENT DATA
   =============================== */
 
+
+  function processCallbackPayload(data) {
+    const entries = data.CallBackEntries || data.callBackEntries;
+    if (!data || !Array.isArray(entries)) return;
+    renderCallbacks(entries);
+  }
+
+  function renderCallbacks(entries) {
+    // State descriptions from NICE callback data
+    const active   = entries.filter(e => e.StateDescription !== "EndContact");
+    const ended    = entries.filter(e => e.StateDescription === "EndContact");
+    // We'll just show counts for now — expand later
+    // (placeholder until we have more state data)
+  }
   function processContactPayload(data) {
-    if (!data || !Array.isArray(data.contactEntries)) return;
-    for (const entry of data.contactEntries) {
-      if (entry.ContactID == null) continue;
-      const existing = contactMap.get(entry.ContactID) || {};
-      contactMap.set(entry.ContactID, { ...existing, ...entry });
+    // NICE uses lowercase contactEntries
+    const entries = data.contactEntries || data.ContactEntries;
+    if (!data || !Array.isArray(entries)) return;
+    for (const entry of entries) {
+      const id = entry.ContactID ?? entry.ContactId;
+      if (id == null) continue;
+      const existing = contactMap.get(id) || {};
+      const merged = { ...existing, ...entry };
+      // Remove contacts that are no longer in queue (state not 10)
+      if (merged.CurrentContactState !== 10) {
+        contactMap.delete(id);
+      } else {
+        contactMap.set(id, merged);
+      }
     }
     renderQueue();
   }
@@ -706,6 +729,7 @@
 
   const AGENT_ENDPOINT = "GetAllAgentEntryList";
   const CONTACT_ENDPOINT = "GetContactQueueEntryList";
+  const CALLBACK_ENDPOINT = "GetCallBackEntryList";
   const OrigXHR = window.XMLHttpRequest;
 
   function PatchedXHR() {
@@ -723,6 +747,7 @@
         const data = JSON.parse(xhr.responseText);
         if (_url.includes(AGENT_ENDPOINT)) processAgentPayload(data);
         if (_url.includes(CONTACT_ENDPOINT)) processContactPayload(data);
+        if (_url.includes(CALLBACK_ENDPOINT)) processCallbackPayload(data);
       } catch (e) { /* ignore */ }
     });
 
@@ -739,6 +764,7 @@
     const res = await origFetch(input, init);
     if (url.includes(AGENT_ENDPOINT)) res.clone().json().then(processAgentPayload).catch(() => {});
     if (url.includes(CONTACT_ENDPOINT)) res.clone().json().then(processContactPayload).catch(() => {});
+    if (url.includes(CALLBACK_ENDPOINT)) res.clone().json().then(processCallbackPayload).catch(() => {});
     return res;
   };
 
