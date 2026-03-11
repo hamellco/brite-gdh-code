@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      6.3
+// @version      6.6
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -169,13 +169,15 @@
      STATE MAP
   =============================== */
 
+  // Lucide monochrome white SVGs
+  const S = 'class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"';
   const ICONS = {
-    available:   `<svg class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="#a3be8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/></svg>`,
-    unavailable: `<svg class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="#bf616a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`,
-    inbound:     `<svg class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="#88c0d0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.06 1.18 2 2 0 012 .06h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/><path d="M17 7l-4 4m0 0V7m0 4h4"/></svg>`,
-    outbound:    `<svg class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="#ebcb8b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.06 1.18 2 2 0 012 .06h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/><path d="M17 3h4m0 0v4m0-4l-5 5"/></svg>`,
-    acw:         `<svg class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="#b48ead" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
-    loggedoff:   `<svg class="rcStateIcon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>`,
+    available:   `<svg ${S}><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/></svg>`,
+    unavailable: `<svg ${S}><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`,
+    inbound:     `<svg ${S}><polyline points="16 2 16 8 22 8"/><line x1="23" y1="1" x2="16" y2="8"/><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>`,
+    outbound:    `<svg ${S}><polyline points="23 7 23 1 17 1"/><line x1="16" y1="8" x2="23" y2="1"/><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>`,
+    acw:         `<svg ${S}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+    loggedoff:   `<svg ${S}><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>`,
   };
 
   const STATE_META = {
@@ -194,6 +196,7 @@
     "Kamal Bal",
     "John Stone",
     "Kody Hogg",
+    "Diego Simbron",
   ]);
 
   /* ===============================
@@ -406,14 +409,14 @@
       padding:20px 22px; display:flex; align-items:center; gap:18px; min-width:0;
     }
     #rc-overlay-root .rcStateIcon{
-      width:22px; height:22px; flex:0 0 auto; display:block;
+      width:33px; height:33px; flex:0 0 auto; display:block;
     }
     #rc-overlay-root .rcName{
       font-size:32px; font-weight:900;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
     }
     #rc-overlay-root .rcState{
-      margin-left:auto; font-size:18px; font-weight:800; color:#a7b0c0;
+      margin-left:auto; font-size:18px; font-weight:800;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%;
     }
     #rc-overlay-root .rcRowTime{
@@ -550,7 +553,7 @@
     if (entry.CurrentState === 2 && entry.OutstateDescription) {
       label = `Unavailable: ${entry.OutstateDescription}`;
     }
-    return { icon: meta.icon, label };
+    return { icon: meta.icon, label, color: meta.color };
   }
 
   /* ===============================
@@ -574,14 +577,14 @@
     }
 
     container.innerHTML = agents.map(agent => {
-      const { icon, label } = getStateMeta(agent);
+      const { icon, label, color } = getStateMeta(agent);
       const time = fmtDuration(agent.Duration);
       return `
         <div class="rcRow">
           <div class="rcRowMain">
             ${icon}
             <div class="rcName">${esc(agent.AgentName)}</div>
-            <div class="rcState">${esc(label)}</div>
+            <div class="rcState" style="color:${color}">${esc(label)}</div>
           </div>
           <div class="rcRowTime">${esc(time)}</div>
         </div>`;
