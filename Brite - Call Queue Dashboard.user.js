@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      6.7
+// @version      6.8
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -479,7 +479,7 @@
         <section class="rcCard">
           <div class="rcCardHd">Calls Waiting in Queue</div>
           <div class="rcCardBd">
-            <div class="rcQueueBox">Live data coming soon</div>
+            <div class="rcQueueBox" id="rc-queue-box">Live data coming soon</div>
           </div>
         </section>
 
@@ -634,7 +634,7 @@
   }
 
   function renderQueue() {
-    const el = document.querySelector("#rc-overlay-root .rcQueueBox");
+    const el = document.getElementById("rc-queue-box");
     if (!el) return;
 
     // Waiting = no agent assigned and state 10
@@ -767,6 +767,11 @@
 
   setHeaderHeightVar();
   window.addEventListener("resize", setHeaderHeightVar);
+
+  // Render queue immediately and keep refreshing every 5s
+  // so it shows 0 when NICE sends no contact deltas
+  setTimeout(renderQueue, 500);
+  setInterval(renderQueue, 5000);
 
   /* ===============================
      AUTO-SCROLL TEAM LIST
