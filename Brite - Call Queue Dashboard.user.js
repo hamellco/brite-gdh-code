@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      6.6
+// @version      6.7
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -190,6 +190,7 @@
   };
 
   const agentMap = new Map();
+  const contactMap = new Map();
 
   // Level 2 agents — hidden from the dashboard permanently
   const HIDDEN_AGENTS = new Set([
@@ -622,6 +623,48 @@
      PROCESS AGENT DATA
   =============================== */
 
+  function processContactPayload(data) {
+    if (!data || !Array.isArray(data.contactEntries)) return;
+    for (const entry of data.contactEntries) {
+      if (entry.ContactID == null) continue;
+      const existing = contactMap.get(entry.ContactID) || {};
+      contactMap.set(entry.ContactID, { ...existing, ...entry });
+    }
+    renderQueue();
+  }
+
+  function renderQueue() {
+    const el = document.querySelector("#rc-overlay-root .rcQueueBox");
+    if (!el) return;
+
+    // Waiting = no agent assigned and state 10
+    const waiting = [...contactMap.values()].filter(
+      c => c.AgentNo === 0 && c.CurrentContactState === 10
+    );
+
+    if (waiting.length === 0) {
+      el.innerHTML = `<span style="color:#a3be8c;font-size:64px;font-weight:950;line-height:1">0</span>`;
+      return;
+    }
+
+    // Longest wait from StartDate
+    const now = Date.now();
+    const longestMs = Math.max(...waiting.map(c => {
+      const ms = parseNiceDate(c.StartDate);
+      return ms ? now - ms : 0;
+    }));
+    const longestSec = Math.round(longestMs / 1000);
+    const m = Math.floor(longestSec / 60);
+    const s = String(longestSec % 60).padStart(2, "0");
+
+    el.innerHTML = `
+      <div style="text-align:center;line-height:1.2">
+        <div style="font-size:80px;font-weight:950;color:#bf616a;line-height:1">${waiting.length}</div>
+        <div style="font-size:16px;font-weight:700;color:#a7b0c0;margin-top:6px;letter-spacing:.08em;text-transform:uppercase">Waiting</div>
+        <div style="font-size:22px;font-weight:800;color:#ebcb8b;margin-top:8px">Longest: ${m}:${s}</div>
+      </div>`;
+  }
+
   // Parse NICE's /Date(ms-offset)/ format to a JS timestamp
   function parseNiceDate(val) {
     if (!val) return null;
@@ -662,6 +705,7 @@
   =============================== */
 
   const AGENT_ENDPOINT = "GetAllAgentEntryList";
+  const CONTACT_ENDPOINT = "GetContactQueueEntryList";
   const OrigXHR = window.XMLHttpRequest;
 
   function PatchedXHR() {
@@ -675,10 +719,10 @@
     };
 
     xhr.addEventListener("load", function() {
-      if (!_url.includes(AGENT_ENDPOINT)) return;
       try {
         const data = JSON.parse(xhr.responseText);
-        processAgentPayload(data);
+        if (_url.includes(AGENT_ENDPOINT)) processAgentPayload(data);
+        if (_url.includes(CONTACT_ENDPOINT)) processContactPayload(data);
       } catch (e) { /* ignore */ }
     });
 
@@ -693,9 +737,8 @@
   window.fetch = async function(input, init) {
     const url = typeof input === "string" ? input : input?.url || "";
     const res = await origFetch(input, init);
-    if (url.includes(AGENT_ENDPOINT)) {
-      res.clone().json().then(processAgentPayload).catch(() => {});
-    }
+    if (url.includes(AGENT_ENDPOINT)) res.clone().json().then(processAgentPayload).catch(() => {});
+    if (url.includes(CONTACT_ENDPOINT)) res.clone().json().then(processContactPayload).catch(() => {});
     return res;
   };
 
