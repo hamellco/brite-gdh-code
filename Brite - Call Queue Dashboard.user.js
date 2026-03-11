@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      7.0
+// @version      7.1
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -591,7 +591,11 @@
         </div>`;
     }).join("");
 
-    renderStateTiles(agents);
+    // Count ALL active agents for state tiles, not just visible ones
+    const allActiveAgents = [...agentMap.values()].filter(
+      a => !a.LoggedOff && a.CurrentState !== 0
+    );
+    renderStateTiles(allActiveAgents);
     setTimeout(updateScrollAnimation, 100);
   }
 
@@ -638,12 +642,13 @@
     for (const e of entries) {
       const id = e.ContactId ?? e.ContactID;
       if (id == null) continue;
+      // Always overwrite — latest state wins
       cbMap.set(id, e);
     }
 
     const all       = [...cbMap.values()];
-    const inQueue   = all.filter(e => e.StateDescription !== "EndContact" && e.StateDescription !== "Failed");
-    const succeeded = all.filter(e => e.StateDescription === "EndContact");
+    const inQueue   = all.filter(e => !["EndContact", "Failed", "Completed"].includes(e.StateDescription));
+    const succeeded = all.filter(e => e.StateDescription === "EndContact" || e.StateDescription === "Completed");
     const failed    = all.filter(e => e.StateDescription === "Failed");
 
     setTileValue("rc-tile-cb-total",   all.length);
