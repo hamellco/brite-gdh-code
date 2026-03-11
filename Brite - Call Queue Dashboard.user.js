@@ -2,7 +2,7 @@
 // @name         Brite - Call Queue Dashboard
 // @author       Griffin D. Hamell
 // @namespace    http://brite.com/
-// @version      6.9
+// @version      7.0
 // @description  Full-screen Call Queue TV overlay with live agent data, Nord icons, seasonal SVGs
 // @match        https://na1.nice-incontact.com/mydashboard/*
 // @grant        none
@@ -468,10 +468,10 @@
           <div class="rcCardHd">Agent State Counter</div>
           <div class="rcCardBd">
             <div class="rcTiles4">
-              ${tile("Available",   "—", "Ready",          "rc-tile-available")}
-              ${tile("Unavailable", "—", "Support / Break", "rc-tile-unavailable")}
-              ${tile("Inbound",     "—", "In call",         "rc-tile-inbound")}
-              ${tile("Outbound",    "—", "Calling out",     "rc-tile-outbound")}
+              ${tile("Available",   "0", "Ready",          "rc-tile-available")}
+              ${tile("Unavailable", "0", "Support / Break", "rc-tile-unavailable")}
+              ${tile("Inbound",     "0", "In call",         "rc-tile-inbound")}
+              ${tile("Outbound",    "0", "Calling out",     "rc-tile-outbound")}
             </div>
           </div>
         </section>
@@ -487,10 +487,10 @@
           <div class="rcCardHd">Callback Requests</div>
           <div class="rcCardBd">
             <div class="rcTiles4">
-              ${tile("Total",      "—", "Today")}
-              ${tile("In Queue",   "—", "Waiting")}
-              ${tile("Successful", "—", "Completed")}
-              ${tile("Failed",     "—", "Errors")}
+              ${tile("Total",      "0", "Today",      "rc-tile-cb-total")}
+              ${tile("In Queue",   "0", "Waiting",    "rc-tile-cb-queue")}
+              ${tile("Successful", "0", "Completed",  "rc-tile-cb-success")}
+              ${tile("Failed",     "0", "Errors",     "rc-tile-cb-failed")}
             </div>
           </div>
         </section>
@@ -630,12 +630,26 @@
     renderCallbacks(entries);
   }
 
+  // Callback state map based on StateDescription
+  // EndContact = completed or failed, others = active/queued
+  const cbMap = new Map();
+
   function renderCallbacks(entries) {
-    // State descriptions from NICE callback data
-    const active   = entries.filter(e => e.StateDescription !== "EndContact");
-    const ended    = entries.filter(e => e.StateDescription === "EndContact");
-    // We'll just show counts for now — expand later
-    // (placeholder until we have more state data)
+    for (const e of entries) {
+      const id = e.ContactId ?? e.ContactID;
+      if (id == null) continue;
+      cbMap.set(id, e);
+    }
+
+    const all       = [...cbMap.values()];
+    const inQueue   = all.filter(e => e.StateDescription !== "EndContact" && e.StateDescription !== "Failed");
+    const succeeded = all.filter(e => e.StateDescription === "EndContact");
+    const failed    = all.filter(e => e.StateDescription === "Failed");
+
+    setTileValue("rc-tile-cb-total",   all.length);
+    setTileValue("rc-tile-cb-queue",   inQueue.length);
+    setTileValue("rc-tile-cb-success", succeeded.length);
+    setTileValue("rc-tile-cb-failed",  failed.length);
   }
   function processContactPayload(data) {
     // NICE uses lowercase contactEntries
